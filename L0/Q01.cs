@@ -4,9 +4,9 @@ class Program
 {
     static void Main()
     {
-    double a = readNumber("Digite o valor de A: "); if (a == 0) { Console.WriteLine("Não é uma equação do 2º grau."); return; }
-        double b = readNumber("Digite o valor de B: ");
-        double c = readNumber("Digite o valor de C: ");
+        double a = ReadNumber("Digite o valor de A: "); if (a == 0) { Console.WriteLine("Não é uma equação do 2º grau."); return; }
+        double b = ReadNumber("Digite o valor de B: ");
+        double c = ReadNumber("Digite o valor de C: ");
         double delta = (b * b) - (4 * a * c);
         Console.WriteLine($"\nDelta = {delta}");
 
@@ -32,7 +32,7 @@ class Program
         }
     }
 
-    static double readNumber(string message)
+    static double ReadNumber(string message)
     {
         double number;
         while (true)
