@@ -23,7 +23,7 @@ public static class Fibonacci
         int f = 1;
         int prev = 0;
 
-        for ( int i = 0; i < 30; i++ )
+        for ( int i = 0; i < 29; i++ )
         {
             Console.WriteLine(ToCommaNoation(f));
             f += prev;
