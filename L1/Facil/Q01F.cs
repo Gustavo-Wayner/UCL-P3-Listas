@@ -1,5 +1,3 @@
-using System;
-
 public static class Prog
 {
 	public static void Main()
