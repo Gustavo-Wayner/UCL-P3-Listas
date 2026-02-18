@@ -20,10 +20,12 @@ public static class Program
         }
     }
     
+	private static string[] paymentMethods = new string[3]{"cartão", "dinheiro", "cheque"};
+
     public static void Main()
     {
         Purchase purchase = new();
-        Product product1 = new(10.0f, 13, "produto 1");
+        Product product1 = new(10.0f, 3, "produto 1");
         Product product2 = new(25.0f, 23, "produto 2");
         Product product3 = new(100.0f, 10, "produto 3");
 
@@ -33,40 +35,41 @@ public static class Program
             string list = string.Empty;
             for ( int i = 0; i < Product.all.Count; i++)
             {
-                list += $"{i} - {Product.all[i].title}: R${Product.all[i].price}; Qtd: {Product.all[i].stock}\n";
+                list += $"{i} - {Product.all[i].GetTitle()}: R${Product.all[i].GetPrice()}; Qtd: {Product.all[i].GetStock()}\n";
             }
             int id = Parse($"Digite um numero de 0 a {Product.all.Count - 1} entre os seguintes:\n{list}", $"Digite um NUMERO ENTRE 0 E {Product.all.Count - 1}!", 0, Product.all.Count - 1);
 
-            for ( int i = 0; i < Product.all.Count; i++)
+            if ( Product.all[id].GetStock() >= 1 )
             {
-                if ( id == i )
-                {
-                    if ( Product.all[i].stock >= 1 )
-                    {
-                        purchase.products.Add(Product.all[i]);
-                        purchase.products[i].stock--;
-                    }
-                    else Console.WriteLine("Quantidade insuficiente!");
-                    break;
-                }
+				if ( purchase.Search(Product.all[id], out int i))
+				{
+					purchase.LowerStock(i);
+					purchase.IncreaseAmount(i);
+				}
+
+				else
+				{
+					purchase.AddProduct(Product.all[id]);
+					purchase.LowerStock(purchase.GetCount() - 1);
+					purchase.IncreaseAmount(purchase.GetCount() - 1);
+				}
             }
+            else Console.WriteLine("Quantidade insuficiente!");
 
             cont = Parse("Digite 0 para continuar comprando e 1 para saír: ", "Digite apénas 0 ou 1!", 0, 1);
         }
 
-        foreach(Product prod in Product.all)
-        {
-            Console.WriteLine($"{prod.title}: R${prod.price}; Qtd: {prod.stock}");
-        }
+		int met = Parse("Escolha um método de pagamento:\n0 - Cartão\n1 - Dinheiro\n2 - Cheque\n", "Digite um NUMERO DE 0 A 2!", 0, 2);
+        purchase.LogRecipt(paymentMethods[met]);
     }
 }
 
 public class Product
 {
     public static List<Product> all = new List<Product>();
-    public float price;
-    public int stock;
-    public string title;
+    private float price;
+    private int stock;
+    private string title;
 
     public Product(float _price, int _stock, string _title)
     {
@@ -76,16 +79,66 @@ public class Product
 
         all.Add(this);
     }
+
+	public string GetTitle() { return title; }
+	public int GetStock() { return stock; }
+	public float GetPrice() { return price; }
+
+	public void LowerStock() { stock--; }
 }
 
 public class Purchase
 {
-    public List<Product> products = new List<Product>();
-}
+    private List<Product> products = new List<Product>();
+	private List<int> amount = new List<int>();
 
-enum PaymentMethod
-{
-    Card,
-    Cash,
-    Check
+    public void LowerStock(int id)
+    {
+        products[id].LowerStock();
+    }
+	public void AddProduct(Product prod)
+	{
+		products.Add(prod);
+	}
+
+	public int GetCount()
+	{
+		return products.Count();
+	}
+
+	public void IncreaseAmount(int id)
+	{
+		try
+		{
+			amount[id]++;
+		}
+		catch(ArgumentOutOfRangeException)
+		{
+			amount.Add(1);
+		}
+	}
+
+	public void LogRecipt(string met)
+	{
+		for ( int i = 0; i < Product.all.Count; i++)
+		{
+			Console.WriteLine($"{products[i].GetTitle()} | Unidade: R${products[i].GetPrice()} - Subtotal: R${products[i].GetPrice() * amount[i]} | Qtd: {amount[i]}");
+		}
+		Console.WriteLine($"Método de pagamento: {met}");
+	}
+
+	public bool Search(Product prod, out int index)
+	{
+		for ( int i = 0; i < products.Count; i++)
+		{
+			if(products[i].GetTitle() == prod.GetTitle())
+			{
+				index = i;
+				return true;
+			}
+		}
+
+		index = 0;
+		return false;
+	}
 }
