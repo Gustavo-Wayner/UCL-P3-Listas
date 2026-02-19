@@ -28,6 +28,7 @@ public static class Program
         Product product1 = new(10.0f, 3, "produto 1");
         Product product2 = new(25.0f, 23, "produto 2");
         Product product3 = new(100.0f, 10, "produto 3");
+		Product product4 = new(1050.99f, 1, "produto 3");
 
         int cont = 0;
         while ( cont == 0 )
@@ -54,7 +55,7 @@ public static class Program
 					purchase.IncreaseAmount(purchase.GetCount() - 1);
 				}
             }
-            else Console.WriteLine("Quantidade insuficiente!");
+            else Console.WriteLine($"Produto [ {Product.all[id].GetTitle()} ] esgotado!");
 
             cont = Parse("Digite 0 para continuar comprando e 1 para saír: ", "Digite apénas 0 ou 1!", 0, 1);
         }
@@ -120,11 +121,14 @@ public class Purchase
 
 	public void LogRecipt(string met)
 	{
-		for ( int i = 0; i < Product.all.Count; i++)
+		float total = 0;
+		for ( int i = 0; i < products.Count; i++)
 		{
+			total += products[i].GetPrice() * amount[i];
 			Console.WriteLine($"{products[i].GetTitle()} | Unidade: R${products[i].GetPrice()} - Subtotal: R${products[i].GetPrice() * amount[i]} | Qtd: {amount[i]}");
 		}
 		Console.WriteLine($"Método de pagamento: {met}");
+		Console.WriteLine($"Custo total: R${total}");
 	}
 
 	public bool Search(Product prod, out int index)
