@@ -8,9 +8,9 @@ public static class Juros
 	{
 		while ( true )
 		{
-			Console.Write(prompt);
+			Console.Write( prompt );
 			if ( float.TryParse( Console.ReadLine(), out float result ) && result >= min && result <= max ) return result;
-			Console.WriteLine(err);
+			Console.WriteLine( err );
 		}
 	}
 
@@ -18,9 +18,9 @@ public static class Juros
 	{
 		while ( true )
 		{
-			Console.WriteLine(prompt);
+			Console.WriteLine( prompt );
 			if ( char.TryParse( Console.ReadLine(), out char result ) &&  "sn".Contains( char.ToLower( result ) ) ) return result;
-			Console.WriteLine(err);
+			Console.WriteLine( err );
 		}
 	}
 	public static void Main()
@@ -32,24 +32,24 @@ public static class Juros
 		float M;
 		float t = 1;
 
-		C = ParseF("Quanto voce deseja investir por mes? ", "Digite um numero positivo!");
-		i = ParseF("Qual sera a taxa (%) de juros mensal? ", "Digite um numero positivo!", 0, 100);
+		C = ParseF( "Quanto voce deseja investir por mes? ", "Digite um numero positivo!" );
+		i = ParseF( "Qual sera a taxa (%) de juros mensal? ", "Digite um numero positivo!", 0, 100 );
 		J = C * i * 0.01f * 12;
 		M = J;
 
-		Console.WriteLine($"Após 1 ano, seu investimento de R${ C } por mês rendeu: R${ J }");
-		cont = ParseSN("Deseja continuar por mais 1 ano (S/N)? ", "Digite apenas S ou N");
+		Console.WriteLine( $"Após 1 ano, seu investimento de R${ C } por mês rendeu: R${ J }" );
+		cont = ParseSN( "Deseja continuar por mais 1 ano (S/N)? ", "Digite apenas S ou N" );
 
-		while ( char.ToLower(cont) == 's')
+		while ( char.ToLower(cont) == 's' )
 		{
 			t++;
-			C = ParseF("Quanto voce deseja investir por mes? ", "Digite um numero positivo!");
+			C = ParseF( "Quanto voce deseja investir por mes? ", "Digite um numero positivo!" );
 			J = C * i * 0.01f * 12;
 			M += J;
-			Console.WriteLine($"Após 1 ano, seu investimento de R${ C } por mês rendeu: R${ J }");
+			Console.WriteLine( $"Após 1 ano, seu investimento de R${ C } por mês rendeu: R${ J }" );
 
-			Console.WriteLine($"Total em { t } anos: R${ M }");
-			cont = ParseSN("Deseja continuar por mais 1 ano (S/N)? ", "Digite apenas S ou N");
+			Console.WriteLine( $"Total em { t } anos: R${ M }" );
+			cont = ParseSN( "Deseja continuar por mais 1 ano (S/N)? ", "Digite apenas S ou N" );
 		}
 	}
 }
