@@ -7,7 +7,6 @@ class Program
         int[] arr = new int[100];
         Random random = new Random();
 
-        // gerando 100 numeros aleatorios de 0 a 999
         for (int i = 0; i < arr.Length; i++)
         {
             arr[i] = random.Next(0, 1000);
@@ -19,7 +18,6 @@ class Program
             Console.Write(num + " ");
         }
 
-        // ordenando array
         Array.Sort(arr);
 
         Console.WriteLine("\n\nArray ordenado:");
