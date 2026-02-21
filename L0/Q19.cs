@@ -28,7 +28,7 @@ public static class Program
         Product product1 = new( 10.0f, 3, "produto 1" );
         Product product2 = new( 25.0f, 23, "produto 2" );
         Product product3 = new( 100.0f, 10, "produto 3" );
-		Product product4 = new( 1050.99f, 1, "produto 3" );
+		Product product4 = new( 1050.99f, 1, "produto 4" );
 
         int cont = 0;
         while ( cont == 0 )
