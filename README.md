@@ -4,9 +4,9 @@ Esse repositorio contem as listas de questoes passadas pelo professor Anker da U
 
 # Como rodar projetos com Raylib-cs
 
-## Configurando o Raylib-cs
+## Configurando o Raylib-cs para a questão 2 da lista 0
 
-1. Abra o terminal na pasta do projeto (por exemplo, `L0/Q02`).
+1. Abra o terminal na pasta do projeto: `L0/Q02`.
 2. Execute o comando:
    ```sh
    dotnet add package Raylib-cs
@@ -15,7 +15,7 @@ Esse repositorio contem as listas de questoes passadas pelo professor Anker da U
 
 ## Rodando o projeto no VS Code
 
-1. Certifique-se de abrir a pasta do projeto (por exemplo, `L0/Q02`) no VS Code, não apenas o arquivo `.cs`.
+1. Certifique-se de abrir a pasta do projeto (`L0/Q02`) no VS Code, não apenas o arquivo `.cs`.
 2. Instale a extensão C# (Microsoft) no VS Code.
 3. Clique no arquivo `Program.cs` e use o botão "Run" (Executar) ou pressione `F5` para rodar o projeto.
    - Se aparecer uma opção, escolha rodar o projeto e não apenas o arquivo.
