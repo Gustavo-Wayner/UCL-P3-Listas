@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.NetworkInformation;
 using System.Numerics;
 using System.Security.Cryptography.X509Certificates;
 using Raylib_cs;
@@ -9,27 +10,30 @@ namespace Prog;
 public class Point
 {
 	private Vector3 velocity;
-	private int x;
-	private int y;
+	private float x;
+	private float y;
 	private float z;
+
+	private Color col;
 
 	private float radius;
 
-	public Point( int _x, int _y, float _z )
+	public Point( int _x, int _y, float _z, Color _col )
 	{
 		x = _x;
 		y = _y;
 		z = _z;
-		radius = _z * 0.05f;
+		col = _col;
+		radius = 0.5f;
 		velocity = new( 0, 0, 0 );
 	}
 
 	public void Draw()
 	{
-		DrawCircle( x, y, z * 0.05f, Color.Black );
+		DrawSphere( GetPosition(), radius, col );
 	}
 
-	public void SetVelocity( int x, int y, int z )
+	public void SetVelocity( float x, float y, float z )
 	{
 		velocity.X = x;
 		velocity.Y = y;
@@ -42,9 +46,9 @@ public class Point
 
 	public void Update()
 	{
-		x += (int)velocity.X;
-		y += (int)velocity.Y;
-		z += (int)velocity.Z*3;
+		x += velocity.X;
+		y += velocity.Y;
+		z += velocity.Z;
 	}
 
 	public Vector3 GetPosition()
@@ -76,25 +80,60 @@ public static class Q02
 	{
 		// Setup
 		InitWindow( WindowWidth, WindowHeight, "win" );
-		SetTargetFPS(60);
+		SetTargetFPS( 60 );
 
-		Camera2D camera = new Camera2D();
-		camera.Offset = new Vector2( WindowWidth * 0.5f, WindowHeight * 0.5f );
-        camera.Rotation = 0.0f;
-        camera.Zoom = 1.0f;
-		Point p1 = new( -200, 0, 500 );
-		Point p2 = new( 200, 0, 500 );
+		Camera3D camera = new Camera3D();
+		camera.Position = new Vector3(10, 10, 10);
+		camera.Target = new Vector3(0, 0, 0);
+		camera.Up = new Vector3(0, 1, 0);
+		camera.FovY = 45.0f;
+		camera.Projection = CameraProjection.Perspective;
+
+		Point p1 = new( -2, 0, 0, Color.Blue );
+		Point p2 = new( 2, 1, -1, Color.Red );
 		float dist;
 
+		bool spin = true;
+		bool show_help = true;
+
+		float speed = 0.05f;
+
+		Color PosTx1 = new Color(10, 10, 200);
+		Color PosTx2 = new Color(200, 10, 10);
+
 		// Game Loop
-		int speed = 4;
 		while(!WindowShouldClose())
 		{
+			if ( IsKeyPressed( KeyboardKey.P ) ) spin = !spin;
+			if ( IsKeyPressed( KeyboardKey.T ) ) show_help = !show_help;
+
+			Vector3 camForward = Vector3.Normalize( new Vector3(
+				camera.Target.X - camera.Position.X,
+				0,
+				camera.Target.Z - camera.Position.Z
+			));
+
+			Vector3 camRight = new Vector3( camForward.Z, 0, -camForward.X );
+			if ( spin ) UpdateCamera(ref camera, CameraMode.Orbital);
+			else
+			{
+				UpdateCamera(ref camera, CameraMode.Custom);
+
+				float scroll = GetMouseWheelMove();
+				if (scroll != 0)
+				{
+					Vector3 direction = Vector3.Normalize(camera.Position - camera.Target);
+					camera.Position += direction * -scroll;
+				}
+			}
+
 			// Física
-			p1.SetVelocity( ( IsKeyDown( KeyboardKey.D ) - IsKeyDown( KeyboardKey.A ) ) * speed,
-				( IsKeyDown( KeyboardKey.S ) - IsKeyDown(KeyboardKey.W ) ) * speed,
-				( IsKeyDown( KeyboardKey.Up ) - IsKeyDown(KeyboardKey.Down ) ) * speed
-			);
+			float fb = (IsKeyDown(KeyboardKey.W) - IsKeyDown(KeyboardKey.S)) * speed;
+			float lr = (IsKeyDown(KeyboardKey.A) - IsKeyDown(KeyboardKey.D)) * speed;
+			float ud = (IsKeyDown(KeyboardKey.Space) - IsKeyDown(KeyboardKey.LeftShift)) * speed;
+
+			Vector3 vel = camForward * fb + camRight * lr + new Vector3(0, ud, 0);
+			p1.SetVelocity(vel.X, vel.Y, vel.Z);
 
 			Vector3 p1Pos = p1.GetPosition();
 			Vector3 p2Pos = p2.GetPosition();
@@ -111,20 +150,48 @@ public static class Q02
 			p1.Update();
 			p1.SetVelocity( 0, 0, 0 );
 
+			Vector3 XS = p1.GetPosition();
+			XS.X += 2;
+
+			Vector3 ZS = p1.GetPosition();
+			ZS.Z += 2;
+
+			Vector3 YS = p1.GetPosition();
+			YS.Y += 2;
+
 			// Desenhos
 			BeginDrawing();
-			BeginMode2D( camera );
+			BeginMode3D( camera );
 
 			ClearBackground( Color.White );
 			p1.Draw();
 			p2.Draw();
+			DrawGrid(40, 1);
+			DrawLine3D(p1.GetPosition(), p2.GetPosition(), Color.Black);
 
-			DrawText( $"{{ X:{p1Pos.X}, Y:{p1Pos.Y}, Z:{p1Pos.Z} }}", (int)p1Pos.X + 30, (int)p1Pos.Y - 30, 22, Color.Green );
-			DrawText( $"{{ X:{p2Pos.X}, Y:{p2Pos.Y}, Z:{p2Pos.Z} }}", (int)p2Pos.X + 30, (int)p2Pos.Y - 30, 22, Color.Green );
+			DrawLine3D(p1.GetPosition(), XS, Color.Red);
+			DrawLine3D(p1.GetPosition(), YS, Color.Green);
+			DrawLine3D(p1.GetPosition(), ZS, Color.Blue);
 
-			EndMode2D();
+			EndMode3D();
 
-			DrawText( $"Distancia: {dist} pixels", 20, 20, 20, Color.Blue );
+
+			Vector2 p1Screen = GetWorldToScreen(p1.GetPosition(), camera);
+			Vector2 p2Screen = GetWorldToScreen(p2.GetPosition(), camera);
+
+			DrawText($"P1: ({p1Pos.X:F1}, {p1Pos.Y:F1}, {p1Pos.Z:F1})", (int)p1Screen.X + 10, (int)p1Screen.Y - 10, 22, PosTx1);
+			DrawText($"P2: ({p2Pos.X:F1}, {p2Pos.Y:F1}, {p2Pos.Z:F1})", (int)p2Screen.X + 10, (int)p2Screen.Y - 10, 22, PosTx2);
+			DrawText( $"Distancia: {dist}M", 20, 20, 20, Color.Blue );
+
+			if ( show_help )
+			{
+				DrawText("Movimento padrão: WASD", WindowWidth - 255, 20, 20, Color.Green);
+				DrawText("Cima - Baixo: Espaço: Shift Esqerdo", WindowWidth - 368, 40, 20, Color.Green);
+				DrawText("Parar / retomar rotação de camera: P", WindowWidth - 408, 60, 20, Color.Green);
+				DrawText("Aproximar / afastar do centro: scroll", WindowWidth - 400, 80, 20, Color.Green);
+				DrawText("Mostrar / Esconder ajuda: T", WindowWidth - 310, 100, 20, Color.Green);
+			}
+
 			EndDrawing();
 		}
 
