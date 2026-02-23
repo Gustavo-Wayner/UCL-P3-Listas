@@ -15,9 +15,8 @@ Esse repositorio contem as listas de questoes passadas pelo professor Anker da U
 
 ## Rodando o projeto no VS Code
 
-1. Certifique-se de abrir a pasta do projeto (`L0/Q02`) no VS Code, não apenas o arquivo `.cs`.
-2. Instale a extensão C# (Microsoft) no VS Code.
-3. Clique no arquivo `Program.cs` e use o botão "Run" (Executar) ou pressione `F5` para rodar o projeto.
+1. Instale a extensão C# (Microsoft) no VS Code.
+2. Clique no arquivo `Program.cs` dentro de `L0/Q02` e use o botão "Run project associated with this file" (Executar) ou pressione `F5` para rodar o projeto.
    - Se aparecer uma opção, escolha rodar o projeto e não apenas o arquivo.
 
 ## Rodando o projeto pelo terminal
