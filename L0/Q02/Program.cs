@@ -7,12 +7,11 @@ using static Raylib_cs.Raylib;
 
 namespace Prog;
 
+#region Classe Ponto
 public class Point
 {
 	private Vector3 velocity;
-	private float x;
-	private float y;
-	private float z;
+	private Vector3 position;
 
 	private Color col;
 
@@ -20,9 +19,9 @@ public class Point
 
 	public Point( int _x, int _y, float _z, Color _col )
 	{
-		x = _x;
-		y = _y;
-		z = _z;
+		position.X = _x;
+		position.Y = _y;
+		position.Z = _z;
 		col = _col;
 		radius = 0.5f;
 		velocity = new( 0, 0, 0 );
@@ -39,6 +38,13 @@ public class Point
 		velocity.Y = y;
 		velocity.Z = z;
 	}
+
+	public void SetVelocity( Vector3 vec )
+	{
+		velocity.X = vec.X;
+		velocity.Y = vec.Y;
+		velocity.Z = vec.Z;
+	}
 	public Vector3 GetVelocity()
 	{
 		return velocity;
@@ -46,14 +52,14 @@ public class Point
 
 	public void Update()
 	{
-		x += velocity.X;
-		y += velocity.Y;
-		z += velocity.Z;
+		position.X += velocity.X;
+		position.Y += velocity.Y;
+		position.Z += velocity.Z;
 	}
 
 	public Vector3 GetPosition()
 	{
-		return new Vector3( x, y, z );
+		return position;
 	}
 
 	public float GetRadius()
@@ -61,6 +67,7 @@ public class Point
 		return radius;
 	}
 }
+#endregion
 
 public static class Q02
 {
@@ -78,7 +85,7 @@ public static class Q02
 	private const int WindowHeight = 600;
 	public static void Main()
 	{
-		// Setup
+		#region Setup
 		InitWindow( WindowWidth, WindowHeight, "win" );
 		SetTargetFPS( 60 );
 
@@ -91,7 +98,6 @@ public static class Q02
 
 		Point p1 = new( -2, 0, 0, Color.Blue );
 		Point p2 = new( 2, 1, -1, Color.Red );
-		float dist;
 
 		bool spin = true;
 		bool show_help = true;
@@ -100,8 +106,11 @@ public static class Q02
 
 		Color PosTx1 = new Color(10, 10, 200);
 		Color PosTx2 = new Color(200, 10, 10);
+		float dist;
 
-		// Game Loop
+		#endregion
+		
+		#region Game Loop
 		while(!WindowShouldClose())
 		{
 			if ( IsKeyPressed( KeyboardKey.P ) ) spin = !spin;
@@ -127,13 +136,14 @@ public static class Q02
 				}
 			}
 
-			// Física
-			float fb = (IsKeyDown(KeyboardKey.W) - IsKeyDown(KeyboardKey.S)) * speed;
-			float lr = (IsKeyDown(KeyboardKey.A) - IsKeyDown(KeyboardKey.D)) * speed;
-			float ud = (IsKeyDown(KeyboardKey.Space) - IsKeyDown(KeyboardKey.LeftShift)) * speed;
+			#region Física
 
-			Vector3 vel = camForward * fb + camRight * lr + new Vector3(0, ud, 0);
-			p1.SetVelocity(vel.X, vel.Y, vel.Z);
+			float XA = (IsKeyDown(KeyboardKey.W) - IsKeyDown(KeyboardKey.S)) * speed;
+			float ZA = (IsKeyDown(KeyboardKey.A) - IsKeyDown(KeyboardKey.D)) * speed;
+			float YA = (IsKeyDown(KeyboardKey.Space) - IsKeyDown(KeyboardKey.LeftShift)) * speed;
+
+			Vector3 vel = camForward * XA + camRight * ZA + new Vector3(0, YA, 0);
+			p1.SetVelocity(vel);
 
 			Vector3 p1Pos = p1.GetPosition();
 			Vector3 p2Pos = p2.GetPosition();
@@ -144,7 +154,8 @@ public static class Q02
 
 			float dot = ( dN.X * vN.X ) + ( dN.Y * vN.Y ) + ( dN.Z * vN.Z );
 
-			dist = d.Length();
+			p1Pos = p1.GetPosition();
+			dist = Vector3.Distance(p1Pos, p2Pos);
 			if( dist < p1.GetRadius() + p2.GetRadius() && dot > 0 ) p1.SetVelocity( 0, 0, 0 );
 
 			p1.Update();
@@ -159,7 +170,9 @@ public static class Q02
 			Vector3 YS = p1.GetPosition();
 			YS.Y += 2;
 
-			// Desenhos
+			#endregion
+
+			#region Drawing
 			BeginDrawing();
 			BeginMode3D( camera );
 
@@ -193,7 +206,9 @@ public static class Q02
 			}
 
 			EndDrawing();
+			#endregion
 		}
+		#endregion
 
 		CloseWindow();
 	}

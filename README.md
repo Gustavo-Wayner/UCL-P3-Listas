@@ -6,6 +6,8 @@ Esse repositorio contem as listas de questoes passadas pelo professor Anker da U
 
 ## Configurando o Raylib-cs para a questão 2 da lista 0
 
+**Não deve ser necessário; Tente apenas caso hajam erros de dependencias da raylib ao compilar a questão**
+
 1. Abra o terminal na pasta do projeto: `L0/Q02`.
 2. Execute o comando:
    ```sh
