@@ -12,9 +12,7 @@ public class Point
 {
 	private Vector3 velocity;
 	private Vector3 position;
-
 	private Color col;
-
 	private float radius;
 
 	public Point( int _x, int _y, float _z, Color _col )
@@ -81,11 +79,12 @@ public static class Q02
 
 		return vec;
 	}
-	private const int WindowWidth = 900;
-	private const int WindowHeight = 600;
+	private static int WindowWidth = 900;
+	private static int WindowHeight = 600;
 	public static void Main()
 	{
 		#region Setup
+		SetConfigFlags(ConfigFlags.ResizableWindow);
 		InitWindow( WindowWidth, WindowHeight, "win" );
 		SetTargetFPS( 60 );
 
@@ -113,6 +112,11 @@ public static class Q02
 		#region Game Loop
 		while(!WindowShouldClose())
 		{
+			if( IsWindowResized() )
+			{
+				WindowHeight = GetScreenHeight();
+				WindowWidth = GetScreenWidth();
+			}
 			if ( IsKeyPressed( KeyboardKey.P ) ) spin = !spin;
 			if ( IsKeyPressed( KeyboardKey.T ) ) show_help = !show_help;
 
@@ -126,8 +130,6 @@ public static class Q02
 			if ( spin ) UpdateCamera(ref camera, CameraMode.Orbital);
 			else
 			{
-				UpdateCamera(ref camera, CameraMode.Custom);
-
 				float scroll = GetMouseWheelMove();
 				if (scroll != 0)
 				{
